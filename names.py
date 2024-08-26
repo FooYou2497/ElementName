@@ -11,10 +11,6 @@ def getein( n ):
         temp = temp + root[int(ch)][0]
     return temp.capitalize()
 
-# for i in range(118):
-#     elements_IUPAC_name[i+1] = getein(i+1)
-# print(elements_IUPAC_name)
-
 def getesn( n ):
     temp = ''
     for ch in list(str(n)):
@@ -22,10 +18,29 @@ def getesn( n ):
     temp = temp.replace("nnn", "nn") + 'ium'
     return temp.replace("ii","i").capitalize()
 
-# for i in range(118):
-#     elements_system_name[i+1] = getesn(i+1)
-# print(elements_system_name)
+# energy level s p d f g
+def getle( n ):
+    return 2*(2*n - 1)
 
-print(getein(114514),getesn(114514))
-print(getein(1919810),getesn(1919810))
-    
+#Atomic orbital K L M N O P Q R S
+def getao( n ):
+    return 2*n**2
+
+#period 1 2 3 4 5 6 7 8 9
+def getp( n ):
+    return (6*n + 2*(n//2)**3 + 9*(n//2)**2 + 7*(n//2) + 2*((n+1)//2)**3 + 3*((n+1)//2)**2 - 5*((n+1)//2))//3
+
+def getf( n ):
+    return n//2+1
+
+def gete( n ):
+    return 2*(n//2+1)**2 - n//2 - 1
+
+def maxp( n ):
+    if n == 1: return 1 
+    else: i = 1
+    while n > getp(i): i += 1
+    if n - getp(i-1) <= getf(i-1): i -= 1
+    return i    
+
+print(maxp(173))
