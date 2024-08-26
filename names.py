@@ -37,10 +37,90 @@ def gete( n ):
     return 2*(n//2+1)**2 - n//2 - 1
 
 def maxp( n ):
-    if n == 1: return 1 
+    if n == 1: return 1,1
     else: i = 1
     while n > getp(i): i += 1
+    ri = i
     if n - getp(i-1) <= getf(i-1): i -= 1
-    return i    
+    return i,ri
 
-print(maxp(173))
+def getxybyen( n ):
+    if n == 1: return [1,1]
+    else: x,y = 0,1
+    while n > getp(y): y += 1
+    if n - getp(y-1) <= getf(y): x = n - getp(y-1)
+    else: x =  n - getp(y) - 1
+    return [x,y]
+
+def CreatePTOE( n, mu ):
+
+    mw,rw = maxp(n)
+    ml = getao(mw//2+1)
+
+    coordinates = []
+    for i in range(n):
+        i += 1
+        pos = getxybyen(i)
+        if pos[0] < 0:
+            pos[0] = ml + pos[0] + 1
+        coordinates.append([pos[0]*mu,pos[1]*mu])
+
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as patches
+    from matplotlib import font_manager
+    adobe_clean = font_manager.FontProperties(fname='AdobeClean-Regular.ttf')
+    # x_values = [coord[0] for coord in coordinates]
+    # y_values = [coord[1] for coord in coordinates]
+    # plt.scatter(x_values, y_values)
+    fig, ax = plt.subplots(figsize=(ml*mu + mu, rw*mu + mu))
+    y_range = ax.get_ylim()
+    mul = (y_range[1] - y_range[0])*(1/2+1/25)
+
+    for index,coord in enumerate(coordinates):
+        x, y = coord
+        square = patches.Rectangle((x - mu/2 , y - mu/2), mu, mu, edgecolor='black', facecolor='none')
+        ax.add_patch(square)
+
+        ax.text(x-mu/2+mu/25, y-mu/2+mu/25, str(index + 1), fontsize=mul*25, fontproperties=adobe_clean, ha='left', va='top')
+        # ax.text(x, y, getein(index + 1), fontsize=mul*50, fontproperties=adobe_clean, ha='center', va='center')
+        # ax.text(x, y+mu/4+mu/25, getesn(index + 1), fontsize=mul*12.5, fontproperties=adobe_clean, ha='center', va='top')
+        ax.text(x, y, elements_name[index + 1], fontsize=mul*50, fontproperties=adobe_clean, ha='center', va='center')
+        ax.text(x, y+mu/4+mu/25, elements_latin_name[index + 1], fontsize=mul*12.5, fontproperties=adobe_clean, ha='center', va='top')
+
+    for y in range(rw):
+        y += 1
+        square = patches.Rectangle((0 , y*mu - mu/2), mu/2, mu, edgecolor='black', facecolor='none')
+        ax.add_patch(square)
+        ax.text(0+mu/4, y*mu, str(y), fontsize=mul*37.5, fontproperties=adobe_clean, ha='center', va='center')
+
+    min_y_dict = {}
+    for pos in coordinates:
+        if pos[0]/mu not in min_y_dict or pos[1] < min_y_dict[pos[0]/mu]:
+            min_y_dict[pos[0]/mu] = pos[1]
+    
+    for x in range(ml):
+        x += 1
+        square = patches.Rectangle((x*mu - mu/2 , min_y_dict[x] - mu), mu, mu/2, edgecolor='black', facecolor='none')
+        ax.add_patch(square)
+        ax.text(x*mu, min_y_dict[x]-3*mu/4, str(x), fontsize=mul*37.5, fontproperties=adobe_clean, ha='center', va='center')
+
+    square = patches.Rectangle((0 , 0), mu/2, mu/2, edgecolor='black', facecolor='none')
+    ax.add_patch(square)
+    triangle = patches.Polygon([(0, 0), (mu/2, mu/2), (0, 0)], closed=False, fill=False, edgecolor='black')
+    ax.add_patch(triangle)
+
+    plt.title('Periodic Table of Elements',fontproperties=adobe_clean, fontsize=mul*50)
+    plt.xlabel('Groups')
+    plt.ylabel('Periods')
+    plt.xlim(0, ml+1)
+    plt.ylim(rw+1, 0)
+    plt.axis('equal')
+    plt.axis('off')
+    plt.grid()
+    plt.savefig(str(n)+'PeriodicTableOfElements.png', bbox_inches="tight", dpi=240)
+    # plt.show()
+    plt.close()
+
+# for i in range(15):
+#     CreatePTOE( getp( i+1 ), 1 )
+CreatePTOE( getp( 7 ), 1 )
